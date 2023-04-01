@@ -1,29 +1,24 @@
 import gi
 
+# pylint: disable=wrong-import-position
+
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
+
 from gi.repository import Adw, Gtk
 
+# pylint: enable=wrong-import-position
 
+
+@Gtk.Template(filename="data/ui/compiled/main.ui")
 class MainWindow(Adw.ApplicationWindow):
+    """Starting window"""
+
+    __gtype_name__ = "MainWindow"
+
+    # main_stack = Gtk.Template.Child()
+
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        layoutParent = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.set_content(layoutParent)
-
-        self.headerBar = Adw.HeaderBar()
-
-        self.viewSwitcher = Adw.ViewSwitcherBar()
-        self.viewStack = Adw.ViewStack()
-
-        self.viewStack.add()
-
-        layoutParent.append(self.headerBar)
-        layoutParent.append(self.viewSwitcher)
-        layoutParent.append(self.viewStack)
-
-
-class InterfacePage(Gtk.Box):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        Adw.ApplicationWindow.__init__(self, *args, **kwargs)
+        self.style_manager = Adw.StyleManager().get_default()
+        self.style_manager.set_color_scheme(Adw.ColorScheme.PREFER_LIGHT)

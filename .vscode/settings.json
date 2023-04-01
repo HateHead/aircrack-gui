@@ -1,0 +1,15 @@
+{
+    // Python
+    "python.languageServer": "Pylance",
+    "python.formatting.provider": "black",
+    "[python]": {
+        "editor.defaultFormatter": null,
+        "editor.formatOnType": true
+    },
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportMissingModuleSource": "information"
+    },
+    "python.analysis.typeCheckingMode": "basic",
+    "python.linting.mypyEnabled": true,
+    "python.linting.pylintEnabled": true
+}

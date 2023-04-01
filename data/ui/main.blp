@@ -1,0 +1,54 @@
+using Gtk 4.0;
+using Adw 1;
+
+
+template MainWindow : Adw.ApplicationWindow {
+    can-focus: true;
+    title: _("aircrack-gui");
+    default-width: 800;
+    default-height: 600;
+
+    Gtk.Box {
+        orientation: vertical;
+
+        Adw.HeaderBar {
+
+        }
+
+        Gtk.Box {
+            orientation: horizontal;
+
+            Gtk.StackSidebar {
+                vexpand: true;
+                hexpand: true;
+                stack: main_stack;
+            }
+
+            Gtk.Stack main_stack {
+                name: "MainStack";
+                vexpand: true;
+                hexpand: true;
+
+                Gtk.StackPage {
+                    child: interface_page;
+                }
+
+                Gtk.StackPage {
+                    child: aircrack_page;
+                }
+            }
+        }
+    }
+}
+
+Gtk.Box interface_page {
+    Gtk.Label {
+        label: "test";
+    }
+}
+
+Gtk.Box aircrack_page {
+    Gtk.Label {
+        label: "air";
+    }
+}

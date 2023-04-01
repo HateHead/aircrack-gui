@@ -1,19 +1,25 @@
 from typing import Iterable
-from termcolor import colored
 import os
 import sys
 import itertools
 import time
 import threading
 
+from termcolor import colored
+
 os.system("")
 
 
 class Spinner:
+    """Spinner"""
+
     spinner: Iterable = []
     delay: float = 0
     busy: bool = False
     spinner_visible: bool = False
+
+    thread: threading.Thread
+    _lock: threading.Lock
 
     def __init__(self, message: str, delay: float = 0.1):
         self.spinner = itertools.cycle(["-", "/", "|", "\\"])
@@ -23,14 +29,16 @@ class Spinner:
         sys.stdout.write(message)
 
     def write_next(self):
-        with self._screen_lock:
+        """Writes next fase"""
+        with self._lock:
             if not self.spinner_visible:
                 sys.stdout.write(next(self.spinner))  # type: ignore
                 self.spinner_visible = True
                 sys.stdout.flush()
 
     def remove_spinner(self, cleanup=False):
-        with self._screen_lock:
+        """Clears the line"""
+        with self._lock:
             if self.spinner_visible:
                 sys.stdout.write("\b")
                 self.spinner_visible = False
@@ -40,6 +48,7 @@ class Spinner:
                 sys.stdout.flush()
 
     def spinner_task(self):
+        """Creates a spinner task"""
         while self.busy:
             self.write_next()
             time.sleep(self.delay)
@@ -47,7 +56,7 @@ class Spinner:
 
     def __enter__(self):
         if sys.stdout.isatty():
-            self._screen_lock = threading.Lock()
+            self._lock = threading.Lock()
             self.busy = True
             self.thread = threading.Thread(target=self.spinner_task)
             self.thread.start()
@@ -60,7 +69,7 @@ class Spinner:
             sys.stdout.write("\r")
 
 
-def ProgressBar(length: int, percentage: float) -> str:
+def progress_bar(length: int, percentage: float) -> str:
     """Creates a progress bar where max amount of filled bars = length."""
 
     if length < 1:
@@ -69,75 +78,83 @@ def ProgressBar(length: int, percentage: float) -> str:
     if percentage < 0 or percentage > 100:
         raise ValueError("Fill percentage must be in range [0, 100]")
 
-    filledBars = int(length * percentage / 100)
-    return f"[{'=' * filledBars}{' ' * (length - filledBars)}]"
+    filled_bars = int(length * percentage / 100)
+    return f"[{'=' * filled_bars}{' ' * (length - filled_bars)}]"
 
 
-def YesOrNoQuery(
-    question: str, default: bool = True, yesTooltip: str = "", noTooltip: str = ""
+def yes_or_no_query(
+    question: str, default: bool = True, yes_tooltip: str = "", no_tooltip: str = ""
 ) -> bool:
-    """Creates a yes/no prompt with question, tooltips and default value. Returns True/False for yes/no"""
+    """Creates a yes/no prompt with question, tooltips and default value.
+    Returns True/False for yes/no"""
 
-    valid = {"yes": True, "y": True, "no": False, "n": False}
+    valid_yes = ["yes", "y"]
+    valid_no = ["no", "n"]
 
-    yesTooltipText = f": {yesTooltip} " if yesTooltip != "" else " "
-    noTooltipText = f": {noTooltip}" if noTooltip != "" else ""
+    yes_tooltip_text = f": {yes_tooltip} " if yes_tooltip != "" else " "
+    no_tooltip_text = f": {no_tooltip}" if no_tooltip != "" else ""
 
     if default is None:
-        prompt = f"\n[y{yesTooltipText}/ n{noTooltipText}]"
+        prompt = f"\n[y{yes_tooltip_text}/ n{no_tooltip_text}]"
     elif default:
-        prompt = f"\n[Y{yesTooltipText}/ n{noTooltipText}]"
+        prompt = f"\n[Y{yes_tooltip_text}/ n{no_tooltip_text}]"
     elif not default:
-        prompt = f"\n[y{yesTooltipText}/ N{noTooltipText}]"
+        prompt = f"\n[y{yes_tooltip_text}/ N{no_tooltip_text}]"
     else:
         raise ValueError(f"Invalid default answer: '{default}'")
 
     while True:
-        LogWarning(question + prompt)
+        log_warning(question + prompt)
         choice = input().lower()
         if default is not None and choice == "":
             return default
-        elif choice in valid:
-            return valid[choice]
-        else:
-            yesValid = "/".join([item for item in valid if valid[item]])
-            noValid = "/".join([item for item in valid if not valid[item]])
-            LogError(f"Please respond with {yesValid} for yes, {noValid} for no.\n")
+
+        if choice in valid_yes:
+            return True
+
+        if choice in valid_no:
+            return False
+
+        log_error(
+            f"Please respond with {'/'.join(valid_yes)} for yes, {'/'.join(valid_no)} for no.\n"
+        )
 
 
-def Up() -> str:
+def up() -> str:
+    """Moves caret one line upwards"""
     return "\x1B[1F"
 
 
-def Clear() -> str:
+def clear() -> str:
+    """Clears line"""
     return "\x1B[0K"
 
 
-def StartIndent() -> str:
+def start_indent() -> str:
     """Retuns start indent"""
     return " - "
 
 
-def Indent(level: int) -> str:
+def indent(level: int) -> str:
     """Retuns indent multiplied by level"""
     return "   " * level
 
 
-def LogSuccess(message: str) -> None:
+def log_success(message: str) -> None:
     """Prints green-colored success message"""
     print(colored(message, "green"))
 
 
-def LogMessage(message: str, end: str = "\n") -> None:
+def log_message(message: str, end: str = "\n") -> None:
     """Prints message"""
     print(message, end=end)
 
 
-def LogWarning(warning: str, end: str = "\n") -> None:
+def log_warning(warning: str, end: str = "\n") -> None:
     """Prints yellow-colored warning message"""
     print(colored(warning, "yellow"), end=end)
 
 
-def LogError(error: str, end: str = "\n") -> None:
+def log_error(error: str, end: str = "\n") -> None:
     """Prints red-colored error message"""
     print(colored(error, "red"), end=end)
