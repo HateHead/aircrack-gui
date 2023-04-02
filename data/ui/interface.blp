@@ -1,10 +1,6 @@
 using Gtk 4.0;
 using Adw 1;
 
-template InterfacePage : Gtk.StackPage {
-    vexpand: true;
-    hexpand: true;
-    child: Gtk.Label {
-        label: "test";
-    };
+template InterfacePage : Gtk.Box {
+    orientation: vertical;
 }

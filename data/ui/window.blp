@@ -20,7 +20,6 @@ template MainWindow : Adw.ApplicationWindow {
 
             Gtk.StackSidebar {
                 vexpand: true;
-                hexpand: true;
                 stack: main_stack;
             }
 
@@ -28,27 +27,7 @@ template MainWindow : Adw.ApplicationWindow {
                 name: "MainStack";
                 vexpand: true;
                 hexpand: true;
-
-                Gtk.StackPage {
-                    child: interface_page;
-                }
-
-                Gtk.StackPage {
-                    child: aircrack_page;
-                }
             }
         }
-    }
-}
-
-Gtk.Box interface_page {
-    Gtk.Label {
-        label: "test";
-    }
-}
-
-Gtk.Box aircrack_page {
-    Gtk.Label {
-        label: "air";
     }
 }

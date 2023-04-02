@@ -10,7 +10,7 @@ from gi.repository import Gio, GLib, Adw
 
 # pylint: enable=wrong-import-position
 
-from ui.main import MainWindow
+from ui.window import MainWindow
 
 
 class Application(Adw.Application):
@@ -18,15 +18,16 @@ class Application(Adw.Application):
 
     def __init__(self, **_kwargs):
         """App init"""
-        Adw.Application.__init__(
-            self,
+
+        super().__init__(
             application_id="com.cod3ddot.aircrack-gui",
             flags=Gio.ApplicationFlags.FLAGS_NONE,
         )
-        GLib.set_application_name("My Gtk Application")
+        GLib.set_application_name("aircrack-gui")
 
-    def do_activate(self):
+    def do_activate(self):  # pylint: disable=arguments-differ
         """Runs on app start"""
+
         win = self.props.active_window  # pylint: disable=no-member
         if not win:
             win = MainWindow(application=self)

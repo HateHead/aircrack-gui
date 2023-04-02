@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="InterfacePage" parent="GtkStackPage">
-    <property name="vexpand">true</property>
-    <property name="hexpand">true</property>
-    <property name="child">
+  <template class="InterfacePage" parent="GtkBox">
+    <child>
       <object class="GtkLabel">
         <property name="label">test</property>
       </object>
-    </property>
+    </child>
   </template>
 </interface>
